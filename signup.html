@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+  />
+  <link rel="stylesheet" href="style.css" />
+  <title>Sign Up</title>
+  <style>
+    .form-container {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    form {
+      background-color: #ffffff;
+      padding: 3rem;
+      border-radius: 10px;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),
+                  0 10px 10px rgba(0, 0, 0, 0.22);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .form-container input {
+      margin: 10px 0;
+      padding: 12px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box; /* Added for better box model handling */
+    }
+
+    .form-container button {
+      margin-top: 10px;
+      padding: 12px;
+      width: 100%;
+      background-color: #1e90ff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .form-container p {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+     .form-container span { /* Added basic styling for the span */
+      display: block;
+      text-align: center;
+      margin: 15px 0;
+      color: #555;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; /* Use min-height for flexibility */
+      background: linear-gradient(to right, #36d1dc, #5b86e5);
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px; /* Add padding for smaller screens */
+      box-sizing: border-box;
+    }
+
+    h1 { /* Basic styling for heading */
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <form id="register-form">
+      <h1>Create Account</h1>
+      <span>Use your email for registration</span>
+      <input type="text" placeholder="Name" name="name" required />
+      <input type="email" placeholder="Email" name="email" required />
+      <input type="password" placeholder="Password" name="password" required />
+      <button type="submit">Sign Up</button>
+      <p>Already have an account? <a href="login.html">Sign In</a></p>
+    </form>
+  </div>
+
+  <script>
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) { // Check if the form exists before adding listener
+        registerForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const nameInput = this.querySelector('input[name="name"]');
+        const emailInput = this.querySelector('input[name="email"]');
+        const passwordInput = this.querySelector('input[name="password"]');
+
+        // Basic check if inputs exist before getting value
+        const name = nameInput ? nameInput.value : '';
+        const email = emailInput ? emailInput.value : '';
+        const password = passwordInput ? passwordInput.value : '';
+
+
+        // Optional: Add simple client-side validation here if needed
+
+        fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    // Handle HTTP errors like 4xx, 5xx
+                    return response.json().then(err => { throw new Error(err.message || 'Server error'); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Assuming server sends { success: true } or { success: false, message: '...' }
+                if (data.success === true) {
+                    alert('Registration successful! Redirecting to login...');
+                    window.location.href = 'login.html'; // Make sure login.html is correct path
+                } else {
+                    alert('Registration failed: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Display a user-friendly message from the caught error
+                alert('Something went wrong: ' + error.message);
+            });
+        });
+    } else {
+        console.error('Register form not found!');
+    }
+  </script>
+</body>
+</html>

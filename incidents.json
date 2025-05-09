@@ -1,0 +1,92 @@
+[
+  {
+    "type": "Collision",
+    "description": "Multi-vehicle collision",
+    "time": "4/10/2025, 11:50:28 PM",
+    "location": {
+      "lat": 43.66830744676455,
+      "lng": -79.38297698169815
+    }
+  },
+  {
+    "type": "Traffic",
+    "description": "Road construction in progress",
+    "time": "4/10/2025, 11:52:52 PM",
+    "location": {
+      "lat": 43.6549626691308,
+      "lng": -79.38033326078128
+    }
+  },
+  {
+    "type": "Crime",
+    "description": "Robbery reported nearby",
+    "time": "4/10/2025, 11:53:08 PM",
+    "location": {
+      "lat": 43.654037302735006,
+      "lng": -79.38089845636206
+    }
+  },
+  {
+    "type": "Crime",
+    "description": "Vehicle theft reported",
+    "time": "4/10/2025, 11:53:26 PM",
+    "location": {
+      "lat": 43.657561392345876,
+      "lng": -79.3775725171836
+    }
+  },
+  {
+    "type": "Traffic",
+    "description": "Heavy traffic — expect delays",
+    "time": "4/10/2025, 11:53:39 PM",
+    "location": {
+      "lat": 43.65718881115094,
+      "lng": -79.38926694848854
+    }
+  },
+  {
+    "type": "Traffic",
+    "description": "Police checkpoint — delays possible",
+    "time": "4/10/2025, 11:54:00 PM",
+    "location": {
+      "lat": 43.66231159993344,
+      "lng": -79.4021200940879
+    }
+  },
+  {
+    "type": "Crime",
+    "description": "Shots fired — police responding",
+    "time": "4/10/2025, 11:54:28 PM",
+    "location": {
+      "lat": 43.67870158680199,
+      "lng": -79.42186115243751
+    }
+  },
+  {
+    "type": "Construction",
+    "description": "Bridge under construction — detour in effect",
+    "time": "4/10/2025, 11:54:40 PM",
+    "location": {
+      "lat": 43.70824191928215,
+      "lng": -79.37534091928322
+    }
+  },
+  {
+    "type": "Collision",
+    "description": "Serious crash — emergency services on site",
+    "time": "4/10/2025, 11:54:57 PM",
+    "location": {
+      "lat": 43.68585497469764,
+      "lng": -79.39337726344628
+    }
+  },
+  {
+    "type": "Collision",
+    "description": "Serious crash — emergency services on site",
+    "time": "4/10/2025, 11:55:24 PM",
+    "location": {
+      "lat": 43.67542674428828,
+      "lng": -79.40402026881739
+    }
+  }
+]

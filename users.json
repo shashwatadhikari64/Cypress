@@ -1,0 +1,38 @@
+[
+  {
+    "name": "bbbb",
+    "email": "bb@gmail.com",
+    "password": "123",
+    "registrationDate": "2025-04-11T03:17:40.710Z"
+  },
+  {
+    "name": "asdfas",
+    "email": "bbb@gmail.com",
+    "password": "123",
+    "registrationDate": "2025-04-11T03:19:21.126Z"
+  },
+  {
+    "name": "asdfas",
+    "email": "a@gmail.com",
+    "password": "123",
+    "registrationDate": "2025-04-11T03:20:38.432Z"
+  },
+  {
+    "name": "dsf",
+    "email": "d@gmail.com",
+    "password": "123",
+    "registrationDate": "2025-04-11T03:21:19.071Z"
+  },
+  {
+    "name": "f",
+    "email": "f@gmail.com",
+    "password": "123",
+    "registrationDate": "2025-04-11T03:21:48.288Z"
+  },
+  {
+    "name": "g",
+    "email": "g@gmail.com",
+    "password": "123",
+    "registrationDate": "2025-04-11T03:23:03.077Z"
+  }
+]

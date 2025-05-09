@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="./style.css" />
+    <title>Login Page</title>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="form-container sign-up">
+            <form id="register-form">
+                <h1>Create Account</h1>
+                <span>or use your email for registration</span>
+                <input type="text" placeholder="Name" name="name" required />
+                <input type="email" placeholder="Email" name="email" required />
+                <input type="password" placeholder="Password" name="password" required />
+                <button type="submit">Sign Up</button>
+            </form>
+        </div>
+
+        <div class="form-container sign-in">
+            <form id="login-form">
+                <h1>Sign In</h1>
+                <span>Using your email & password</span>
+                <input type="email" placeholder="Email" name="email" required />
+                <input type="password" placeholder="Password" name="password" required />
+                <a href="#">Forget Your Password?</a>
+                <button type="submit">Sign In</button>
+            </form>
+        </div>
+
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Welcome Back!</h1>
+                    <p>Enter your personal details to use all of site features</p>
+                    <button class="hidden" id="login">Sign In</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Hello, Friend!</h1>
+                    <p>
+                        Register with your personal details to use all of site features
+                    </p>
+                    <a href="signup.html" class="sign-up-link">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const container = document.getElementById('container');
+        const loginBtn = document.getElementById('login');
+
+        if (loginBtn && container) {
+            loginBtn.addEventListener('click', () => {
+                container.classList.remove("active");
+            });
+        }
+
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const email = this.querySelector('input[name="email"]').value;
+                const password = this.querySelector('input[name="password"]').value;
+
+                fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success === true) {
+                        window.location.href = '/index.html';
+                    } else {
+                        alert('Login failed: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during login:', error);
+                    alert('An error occurred during login.');
+                });
+            });
+        }
+
+        // const registerForm = document.getElementById('register-form');
+        // if (registerForm) {
+        //     registerForm.addEventListener('submit', function(event) {
+        //         event.preventDefault();
+        //         const name = this.querySelector('input[name="name"]').value;
+        //         const email = this.querySelector('input[name="email"]').value;
+        //         const password = this.querySelector('input[name="password"]').value;
+
+        //         fetch('/register', {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //             },
+        //             body: JSON.stringify({ name, email, password }),
+        //         })
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             if (data.message === 'Registration successful!') {
+        //                 alert('Registration successful! You can now log in.');
+        //                 window.location.href = '/login.html'; // Redirect to login page after successful registration
+        //             } else {
+        //                 alert('Registration failed: ' + data.message);
+        //             }
+        //         })
+        //         .catch(error => {
+        //             console.error('Error during registration:', error);
+        //             alert('An error occurred during registration.');
+        //         });
+        //     });
+        // }
+
+        // // Remove the toggle class manipulation for the sign-up button
+        // const toggleRightButton = document.querySelector('.toggle-panel.toggle-right button.hidden');
+        // if (toggleRightButton) {
+        //     toggleRightButton.style.display = 'none'; // Hide the button as the link will handle the navigation
+        // }
+
+        // // Keep the toggle for the sign-in button
+        // const toggleLeftButton = document.querySelector('.toggle-panel.toggle-left button.hidden');
+        // if (toggleLeftButton && container) {
+        //     toggleLeftButton.addEventListener('click', () => {
+        //         container.classList.remove("active");
+        //     });
+        // }
+    </script>
+    </body>
+</html>

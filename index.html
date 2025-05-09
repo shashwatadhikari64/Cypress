@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Project Cypress</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+  <a href="/viewReports.html?ts=" target="_blank" onclick="this.href='/viewReports.html?ts=' + new Date().getTime()"
+    style="position: absolute; bottom: 20px; left: 20px;background: #ffffff; color: rgb(0, 0, 0); padding: 10px 15px; border-radius: 5px; font-family: sans-serif; text-decoration: none">
+    See All Incidents
+  </a>
+
+
+  <script>
+    function getIconForType(type) {
+      const icons = {
+        Collision: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+        Construction: 'http://maps.google.com/mapfiles/ms/icons/orange-dot.png',
+        Crime: 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png',
+        Traffic: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+        Other: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+      };
+      return icons[type] || icons.Other;
+    }
+
+    let map;
+    let markers = [];
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 43.651070, lng: -79.347015 },
+        zoom: 12,
+      });
+
+      map.addListener("click", (e) => {
+        const tempMarker = new google.maps.Marker({
+          position: e.latLng,
+          map: map,
+        });
+
+        const formHTML = `
+            <div style="font-family: sans-serif; max-width: 250px;">
+              <label style="font-weight: bold;">Incident Type:</label><br>
+              <select id="incident-type" style="width: 100%; margin: 6px 0; padding: 6px; border-radius: 4px; box-sizing: border-box;">
+                <option value="Collision">Collision</option>
+                <option value="Construction">Construction</option>
+                <option value="Crime">Crime</option>
+                <option value="Traffic">Traffic</option>
+                <option value="Other">Other</option>
+              </select><br>
+              <label style="font-weight: bold;">Incident Description:</label><br>
+              <textarea id="incident-desc" rows="3" style="width: 100%; margin: 6px 0; padding: 6px; border-radius: 4px; box-sizing: border-box;"></textarea><br>
+              <button 
+                onclick="saveIncidentData()" 
+                style="width: 100%; padding: 8px; background-color: #4285F4; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Submit
+              </button>
+            </div>
+          `;
+
+        const infowindow = new google.maps.InfoWindow({
+          content: formHTML,
+        });
+
+        infowindow.open(map, tempMarker);
+
+        // Store references
+        window.currentMarker = tempMarker;
+        window.currentInfoWindow = infowindow;
+        window.currentLatLng = e.latLng;
+
+        // If user closes the form without submitting, remove the pin
+        google.maps.event.addListenerOnce(infowindow, "closeclick", () => {
+          if (!tempMarker.incidentData) {
+            tempMarker.setMap(null);
+          }
+        });
+
+        // Handle marker click after submission
+        tempMarker.addListener("click", () => {
+          if (tempMarker.incidentData) {
+            const content = document.createElement('div');
+            content.style.fontFamily = 'sans-serif';
+            content.innerHTML = `
+                <strong>Type:</strong> ${tempMarker.incidentData.type}<br>
+                <strong>Incident Description:</strong>
+                <p>${tempMarker.incidentData.description}</p>
+              `;
+
+            const hideBtn = document.createElement("button");
+            hideBtn.textContent = "Hide Pin";
+            hideBtn.style.marginTop = "6px";
+            hideBtn.style.padding = "6px 12px";
+            hideBtn.style.background = "#ccc";
+            hideBtn.style.border = "none";
+            hideBtn.style.borderRadius = "4px";
+            hideBtn.style.cursor = "pointer";
+
+            hideBtn.onclick = () => {
+              tempMarker.setMap(null);
+            };
+
+            // Cancel Button
+            const cancelBtn = document.createElement("button");
+            cancelBtn.textContent = "Cancel Pin";
+            cancelBtn.style.marginTop = "6px";
+            cancelBtn.style.marginLeft = "8px";
+            cancelBtn.style.padding = "6px 12px";
+            cancelBtn.style.background = "#f44336"; // red
+            cancelBtn.style.color = "white";
+            cancelBtn.style.border = "none";
+            cancelBtn.style.borderRadius = "4px";
+            cancelBtn.style.cursor = "pointer";
+
+            cancelBtn.onclick = () => {
+              tempMarker.setMap(null);
+              markers = markers.filter(m => m !== tempMarker); // Remove from markers array
+            };
+
+            content.appendChild(hideBtn);
+            content.appendChild(cancelBtn);
+
+            const info = new google.maps.InfoWindow({
+              content: content,
+            });
+
+            info.open(map, tempMarker);
+          }
+        });
+      });
+
+      // Legend
+      const legend = document.createElement("div");
+      legend.style.background = "#fff";
+      legend.style.padding = "10px";
+      legend.style.margin = "10px";
+      legend.style.fontFamily = "sans-serif";
+      legend.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
+      legend.innerHTML = `
+          <h4 style="margin-top: 0;">Legend</h4>
+          <div><img src="${getIconForType('Collision')}"> Collision</div>
+          <div><img src="${getIconForType('Construction')}"> Construction</div>
+          <div><img src="${getIconForType('Crime')}"> Crime</div>
+          <div><img src="${getIconForType('Traffic')}"> Traffic</div>
+          <div><img src="${getIconForType('Other')}"> Other</div>
+        `;
+
+      map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+
+      // Fetch and display existing incidents
+      fetch('/incidents')
+        .then(res => res.json())
+        .then(incidents => {
+          incidents.forEach(incident => {
+            const marker = new google.maps.Marker({
+              position: {
+                lat: incident.location.lat,
+                lng: incident.location.lng
+              },
+              map: map,
+              icon: getIconForType(incident.type)
+            });
+
+            // Store the incidentData so we can reuse the logic
+            marker.incidentData = {
+              type: incident.type,
+              description: incident.description
+            };
+
+            // Add the same info window logic as when manually added
+            marker.addListener("click", () => {
+              const content = document.createElement('div');
+              content.style.fontFamily = 'sans-serif';
+              content.innerHTML = `
+          <strong>Type:</strong> ${marker.incidentData.type}<br>
+          <strong>Incident Description:</strong>
+          <p>${marker.incidentData.description}</p>
+        `;
+
+              const hideBtn = document.createElement("button");
+              hideBtn.textContent = "Hide Pin";
+              hideBtn.style.marginTop = "6px";
+              hideBtn.style.padding = "6px 12px";
+              hideBtn.style.background = "#ccc";
+              hideBtn.style.border = "none";
+              hideBtn.style.borderRadius = "4px";
+              hideBtn.style.cursor = "pointer";
+              hideBtn.onclick = () => {
+                marker.setMap(null);
+              };
+
+              content.appendChild(hideBtn);
+
+              const info = new google.maps.InfoWindow({
+                content: content,
+              });
+
+              info.open(map, marker);
+            });
+
+            markers.push(marker);
+          });
+        })
+        .catch(err => {
+          console.error('Failed to load incidents:', err);
+        });
+
+
+    }
+
+    function saveIncidentData() {
+      const type = document.getElementById("incident-type").value;
+      const desc = document.getElementById("incident-desc").value.trim();
+
+      if (!desc) {
+        window.currentInfoWindow.close();
+        return;
+      }
+
+      const incidentData = {
+        type: type,
+        description: desc,
+        time: new Date().toLocaleString(),
+        location: {
+          lat: window.currentLatLng.lat(),
+          lng: window.currentLatLng.lng()
+        }
+      };
+
+      window.currentMarker.incidentData = incidentData;
+      window.currentMarker.setIcon(getIconForType(type));
+
+      fetch("/report", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(incidentData)
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(data);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+
+      const newContent = `
+          <div style="font-family: sans-serif;">
+            <strong>Type:</strong> ${type}<br>
+            <strong>Incident Description:</strong>
+            <p>${desc}</p>
+          </div>
+        `;
+      window.currentInfoWindow.setContent(newContent);
+
+      // Only push the marker after it's valid
+      markers.push(window.currentMarker);
+    }
+  </script>
+
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBxVqdYP6N2EZ38J1E9NfqvxQXm0KZOMA&callback=initMap">
+    </script>
+  <script src="script.js"></script>
+
+</body>
+
+</html>
